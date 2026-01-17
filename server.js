@@ -1,9 +1,9 @@
 // スライドナレーションアプリ - バックエンドサーバー
-// Gemini 3 Flash + Playwright 統合
+// Gemini 3 Flash + Puppeteer 統合
 
 const express = require('express');
 const cors = require('cors');
-const { chromium } = require('playwright');
+const puppeteer = require('puppeteer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
@@ -39,15 +39,15 @@ app.post('/api/analyze-slide', async (req, res) => {
     try {
         console.log(`📖 スライド解析開始: ${url}`);
         
-        // Playwright でページ内容を取得
-        browser = await chromium.launch({ headless: true });
-        const context = await browser.newContext({
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        // Puppeteer でページ内容を取得
+        browser = await puppeteer.launch({ 
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
-        const page = await context.newPage();
+        const page = await browser.newPage();
         
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-        await page.waitForTimeout(2000); // 追加待機
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 追加待機
         
         // ページのテキストコンテンツを取得
         const textContent = await page.evaluate(() => {
@@ -131,15 +131,15 @@ app.post('/api/analyze-slides-batch', async (req, res) => {
     try {
         console.log(`📖 バッチ解析開始: ${url} (推定${slideCount || '不明'}枚)`);
         
-        // Playwright でページ全体を取得
-        browser = await chromium.launch({ headless: true });
-        const context = await browser.newContext({
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        // Puppeteer でページ全体を取得
+        browser = await puppeteer.launch({ 
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
-        const page = await context.newPage();
+        const page = await browser.newPage();
         
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-        await page.waitForTimeout(3000);
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+        await new Promise(resolve => setTimeout(resolve, 3000));
         
         // スライド要素を検出
         const slides = await page.evaluate(() => {
