@@ -3,10 +3,11 @@
   "version": "2.0.0",
   "description": "AI-powered slide narration app with Gemini 3 Flash integration",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
+"scripts": {
+  "start": "node server.js",
+  "dev": "nodemon server.js",
+  "postinstall": "npx playwright install --with-deps chromium"
+}
   "keywords": [
     "slide",
     "narration",
